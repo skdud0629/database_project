@@ -14,6 +14,7 @@
 using namespace std;
 
 int main() {
+	/*test*/
 	clock_t full_start, full_end;
 	clock_t split_start, split_end;
 	clock_t merge_start, merge_end;
