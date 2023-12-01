@@ -1,0 +1,15 @@
+Andy,4
+Bob,3
+England,1
+Hi,2
+I'm,1
+Nice,2
+This,1
+Where,1
+are,1
+from,2
+is,1
+meet,2
+to,1
+too,1
+you,2
