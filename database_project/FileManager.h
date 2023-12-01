@@ -8,19 +8,20 @@
 
 using namespace std;
 
-class FileManager 
+class FileManager
 {
-private :
+private:
 	fstream file;
 	string filename;
-public :
+public:
 	FileManager();
 	~FileManager();
 
 	void inputFile(string firstFile);
-	void outputFile(fstream *fs, string str);
-	void outputFile(fstream *fs, Map* map[], int size);
-	void deleteFile(int fileNum);
+	void outputFile(fstream* fs, string str);
+	void outputFile(fstream* fs, Map* map[], int size);
+	//void deleteFile(int fileNum);
+	void deleteFile(string filename);
 };
 
 #endif FILEMANAGER_H

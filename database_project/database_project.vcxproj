@@ -139,9 +139,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ConcurrentQueue.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Merge.h" />
+    <ClInclude Include="Semaphore.h" />
     <ClInclude Include="Split.h" />
   </ItemGroup>
   <ItemGroup>
