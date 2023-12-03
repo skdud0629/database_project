@@ -10,11 +10,6 @@
 #include "Split.h"
 
 auto comp = [](const Map& a, const Map& b) { return a.getKey() > b.getKey(); };
-/*
-Split::Split() : sema(10), mapList(comp) {
-	// 생성
-	this->fileManager = new FileManager();
-}*/
 
 Split::Split() : sema(10) {
 	// 생성
@@ -59,80 +54,6 @@ int Split::fileSplit(int strNum, string filename) {
 	fs.close();
 	return index;		// 스레드 개수
 }
-/*
-int Split::wordSplit(int threadNum, string filename) {
-	// 단어 분할 실행
-	fstream fs;
-	fstream outputFile;
-	string str;
-	int index = 0;
-	int fileNum = 0;
-
-	fs.open("./folder/" + filename + ".txt", ios::in);
-
-	if (!fs.is_open()) {
-		cout << "[ERROR] file is not open <Split::wordSplit>" << endl;
-		exit(-1);
-	}
-
-	//sema.wait();
-
-	Map** mapList = new Map*[MAXMAP];
-
-	// 파일에서 한 줄씩 읽어서 단어로 분할
-	while (!fs.eof()) {
-		getline(fs, str);
-
-		vector<char> cstr(str.c_str(), str.c_str() + str.size() + 1);
-		char* token = strtok(&cstr[0], ",.?!: ");
-
-		while (token != nullptr) {
-			mapList[index] = new Map(token, 1);
-			mapList[index]->setValue();
-			index++;
-			// 단어가 일정 개수가 되었을 때 파일로 내보냄
-			if (index == MAXMAP) {
-				wordSort(&mapList, MAXMAP);
-				outputFile.open("./folder/word" + to_string(fileNum) + "_thread" + to_string(threadNum) + ".txt", ios::out);
-				fileManager->outputFile(&outputFile, mapList, MAXMAP);
-				index = 0;
-				for (int i = 0; i < MAXMAP; i++) {
-					if (mapList[i] != nullptr) {
-						delete mapList[i];  // 메모리 해제
-						mapList[i] = nullptr;
-					}
-				}
-				outputFile.close();
-
-				fileNum++;
-			}
-			token = strtok(nullptr, ",.?!: ");
-		}
-	}
-
-	if (index != 0) {
-		wordSort(&mapList, index);
-		outputFile.open("./folder/word" + to_string(fileNum) + "_thread" + to_string(threadNum) + ".txt", ios::out);
-		fileManager->outputFile(&outputFile, mapList, index);
-		outputFile.close();
-		fileNum++;
-	}
-
-	for (int i = 0; i < MAXMAP; i++) {
-		if (mapList[i] != nullptr) {
-			delete mapList[i];  // 각 Map 객체에 대한 메모리 해제
-		}
-	}
-
-	delete[] mapList;
-	fs.close();
-
-	//sema.notify();
-
-	fileManager->deleteFile("./folder/" + filename + ".txt");
-
-	return fileNum;
-}*/
 
 int Split::wordSplit(int threadNum, string filename) {
 	// 단어 분할 실행
@@ -206,6 +127,67 @@ int Split::wordSplit(int threadNum, string filename) {
 }
 
 
+void Split::splitFileByThread(int totalThreads, string filename) {
+	// 파일을 스레드 수에 따라 분할
+	int totalLines = 0;
+
+	ifstream input("./folder/" + filename + ".txt", ios::binary);
+	if (!input.is_open()) {
+		cout << "[ERROR] file is not open <Split::splitFileByThread>" << endl;
+		exit(-1);
+	}
+
+	string line;
+	while (getline(input, line)) {
+		totalLines++;
+	}
+
+	input.close();
+
+	int linesPerThread = totalLines / totalThreads;
+
+	for (int threadNum = 0; threadNum < totalThreads; threadNum++) {
+		int startLine = threadNum * linesPerThread;
+		int endLine = (threadNum == totalThreads - 1) ? totalLines : (threadNum + 1) * linesPerThread;
+
+		splitFile(threadNum, startLine, endLine, filename);
+	}
+}
+void Split::splitFile(int threadNum, int startLine, int endLine, string filename) {
+    ifstream input("./folder/" + filename + ".txt", ios::binary);
+    if (!input.is_open()) {
+        cout << "[ERROR] file is not open <Split::splitFile>" << endl;
+        exit(-1);
+    }
+
+    string outputFileName = "./folder/_thread" + to_string(threadNum) + ".txt";
+    ofstream output(outputFileName);
+
+    if (!output.is_open()) {
+        cout << "[ERROR] file is not open <Split::splitFile>" << endl;
+        exit(-1);
+    }
+
+    string line;
+    int currentLine = 0;
+
+    while (getline(input, line)) {
+        if (currentLine >= startLine && currentLine < endLine) {
+            output << line << endl;
+        }
+        currentLine++;
+
+        if (currentLine >= endLine) {
+            break;
+        }
+    }
+
+    input.close();
+    output.close();
+}
+
+
+
 void merge(Map*** mapList, int left, int mid, int right) {
 	int i = left;
 	int j = mid + 1;
@@ -250,17 +232,3 @@ void Split::wordSort(Map*** mapList, int index) {
 	// 단어를 사전 순으로 정렬
 	mergeSort(mapList, 0, index - 1);
 }
-
-/*
-void Split::wordSort(Map*** mapList, int index) {
-	// 단어를 사전 순으로 정렬
-	for (int i = 0; i < index; i++) {
-		for (int j = i + 1; j < index; j++) {
-			if ((*mapList)[i]->getKey() > (*mapList)[j]->getKey()) {
-				Map* temp = (*mapList)[i];
-				(*mapList)[i] = (*mapList)[j];
-				(*mapList)[j] = temp;
-			}
-		}
-	}
-}*/

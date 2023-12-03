@@ -29,29 +29,29 @@ int main() {
 	cin >> fileName;
 	cout << "str split num : ";
 	cin >> strNum;
+	cout << "total thread number:";//40개 이하정도로 입력받는게 성능면에서 좋음.
+	cin >> threadNum;
 	cout << endl;
-	/*
-	cout << "============[full sentence]=============" << endl;
-	fileManager->inputFile(fileName);
-	cout << "========================================" << endl;
-	*/
+	
 	full_start = clock();
 	split_start = clock();
 	cout << "Split Start" << endl;
 
 	Split* split = new Split();
-	threadNum = split->fileSplit(strNum, fileName);
+	//threadNum = split->fileSplit(strNum, fileName);
+	split->splitFileByThread(threadNum,fileName);//스레드 수로 파일을 나눔.
 
 
 	vector<thread> threads(threadNum + 1);
 	vector<int> fileNums(threadNum + 1);
 
-	//fileNum = split->wordSplit(0, "file0");
-
-	for (int i = 0; i <= threadNum; i++) {
+	for (int i = 0; i < threadNum; i++) {
 		threads[i] = thread([&split, &fileNums, i]() {
-			fileNums[i] = split->wordSplit(i, "file" + to_string(i)); });
+			fileNums[i] = split->wordSplit(i, "_thread"  + to_string(i)); });
+		cout<<fileNums[i]<<endl;
+
 	}
+
 	// 각 스레드의 작업이 끝날 때까지 대기
 	for (auto& th : threads) {
 		th.join();
@@ -64,7 +64,7 @@ int main() {
 	duration = (double)(split_end - split_start) / CLOCKS_PER_SEC;
 	cout << "split_time : " << duration << endl;
 	cout << endl;
-
+	
 	merge_start = clock();
 	cout << "Merge Start" << endl;
 
@@ -100,7 +100,7 @@ int main() {
 	full_end = clock();
 	duration = (double)(full_end - full_start) / CLOCKS_PER_SEC;
 
-	cout << "time : " << duration << endl;
+	cout << "time : " << duration << endl;*/
 
-	//return 0;
+	return 0;
 }

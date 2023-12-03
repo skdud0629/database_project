@@ -28,6 +28,8 @@ public:
 	int fileSplit(int strNum, string filename);
 	int wordSplit(int threadNum, string filename);
 	void wordSort(Map*** mapList, int index);
+	void splitFileByThread(int totalThreads, string filename);
+	void splitFile(int threadNum, int startLine, int endLine, string filename);
 };
 
 #endif SPLIT_H
